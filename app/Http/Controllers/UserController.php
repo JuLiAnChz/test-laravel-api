@@ -13,6 +13,11 @@ class UserController extends Controller
 {
   public function authenticate(Request $request)
   {
+    $request->validate([
+      'email' => 'required|email',
+      'password' => 'required'
+    ]);
+
     $credentials = $request->only('email', 'password');
     try {
       if (!$token = JWTAuth::attempt($credentials)) {
@@ -27,17 +32,7 @@ class UserController extends Controller
 
   public function getAuthUser()
   {
-    try {
-      if (!$user = JWTAuth::parseToken()->authenticate()) {
-        return response()->json(['user_not_found'], 404);
-      }
-    } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-      return response()->json(['token_expired'], 500);
-    } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-      return response()->json(['token_invalid'], 500);
-    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-      return response()->json(['token_absent'], 500);
-    }
+    $user = JWTAuth::parseToken()->authenticate();
     return response()->json(compact('user'));
   }
 

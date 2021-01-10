@@ -20,5 +20,11 @@ Route::group(['prefix' => 'v1'], function () {
 
   Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('user', 'App\Http\Controllers\UserController@getAuthUser');
+
+    Route::group(['prefix' => 'todo'], function() {
+      Route::post('', 'App\Http\Controllers\TodoController@store');
+      Route::get('', 'App\Http\Controllers\TodoController@index');
+      Route::put('{todo_id}', 'App\Http\Controllers\TodoController@update');
+    });
   });
 });
