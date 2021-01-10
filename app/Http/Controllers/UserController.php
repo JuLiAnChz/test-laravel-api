@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -57,5 +58,37 @@ class UserController extends Controller
     $token = JWTAuth::fromUser($user);
 
     return response()->json(compact('user', 'token'), 201);
+  }
+
+  public function all() {
+    $Users = User::orderBy('id')->get();
+    return response()->json($Users);
+  }
+
+  public function inactiveUsers(Request $request) {
+    $request->validate([
+      'users' => 'required|array'
+    ]);
+    User::whereIn('id', $request->users)->update(['status' => false]);
+    $Users = User::whereIn('id', $request->users)->get();
+    return response()->json($Users);
+  }
+
+  public function generateRandomUsers() {
+    $usersRandom = [];
+    for($i = 0; $i < 10;$i++) {
+      $usersRandom[] = [
+        'name' => Str::random(10),
+        'email' => Str::random(10).'@email.com',
+        'password' => Hash::make('Temp123'),
+        'phone' => Str::random(10),
+        'status' => true
+      ];
+    }
+
+    User::insert($usersRandom);
+    $Users = User::orderBy('id', 'desc')->take(count($usersRandom))->get();
+
+    return response()->json($Users);
   }
 }
