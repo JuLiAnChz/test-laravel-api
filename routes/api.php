@@ -19,7 +19,9 @@ Route::group(['prefix' => 'v1'], function () {
   Route::post('signin', 'App\Http\Controllers\UserController@authenticate');
 
   Route::group(['middleware' => ['jwt.verify']], function () {
-    Route::post('user', 'App\Http\Controllers\UserController@getAuthUser');
+    Route::get('users', 'App\Http\Controllers\UserController@all');
+    Route::put('users/inactive', 'App\Http\Controllers\UserController@inactiveUsers');
+    Route::post('users/random', 'App\Http\Controllers\UserController@generateRandomUsers');
 
     Route::group(['prefix' => 'todo'], function() {
       Route::post('', 'App\Http\Controllers\TodoController@store');
